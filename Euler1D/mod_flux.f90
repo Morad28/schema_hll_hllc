@@ -2,6 +2,7 @@ Module mod_flux
   use mod_energie
   Use mod_conservatif_primitif
   use mod_celerite
+  use mod_constante
     implicit none
 contains 
 function fluxstd(rho,u,e,p) 

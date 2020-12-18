@@ -9,35 +9,32 @@ program prog
     !===========================
     
       Implicit None
-      real:: dx, dt, tn=0, eL, e, eR, SR=0, SL=0, maxi, maxi2, tout
+      real:: dx, dt, tn=0, eL, e, eR, SR, SL, maxi, maxi2, tout
       real, Dimension(1:3) :: var, var2, primL, primR, prim
-      real, Dimension(:), Allocatable:: U1, U2, U3, u1i, u2i, u3i, flux1, flux2, flux3
+      real, Dimension(:), Allocatable:: U1, U2, U3, u1i, u2i, u3i
       Integer:: i,j, Bool=0
+
       Allocate(U1(N))
       Allocate(U2(N))
       Allocate(U3(N))
       Allocate(u1i(N))
       Allocate(u2i(N))
       Allocate(u3i(N))
-      Allocate(flux1(N-1))
-      Allocate(flux2(N-1))
-      Allocate(flux3(N-1))
-      tout = 0.035
+      tout = 0.012
       dx = 1./(N)
       dt = 0.000001
 
 
       ! Conditions initiales t = 0 
-      call Initialisation(U1,U2,U3)
+      call Initialisation(u1i,u2i,u3i)
+      U1(1) = u1i(1)
+      U2(1) = u2i(1)
+      U3(1) = u3i(1)
 
-      !print*, U1, U2, U3
-     
+      U1(N) = u1i(N)
+      U2(N) = u2i(N)
+      U3(N) = u3i(N)
 
-      u1i = U1
-      u2i = U2
-      u3i = U3
-
-    
     Loop : do while (tn<tout)
 
       tn = tn + dt
@@ -45,26 +42,29 @@ program prog
       do j = 1, N
         if ( j/= 1 .and. j/=N ) then
         ! On recupere rho, u et p (variables primitives)
-        primL = primitive(u1i(j-1),u2i(j-1),u3i(j-1),gamma)
-        prim = primitive(u1i(j),u2i(j),u3i(j),gamma)
-        primR =primitive(u1i(j+1),u2i(j+1),u3i(j+1),gamma)
+        primL = primitive(u1i(j-1),u2i(j-1),u3i(j-1))
+        prim = primitive(u1i(j),u2i(j),u3i(j))
+        primR =primitive(u1i(j+1),u2i(j+1),u3i(j+1))
+
+        ! Verification positivite de la pression
         if (prim(3)<0) then
           print*, "ERREUR PRESSION NEGATIVE", j, tn,  prim
           Bool=1
           EXIT
         end if
+
         ! Calcul des energies
-        eL = energie(primL(1),primL(3),gamma,b)
-        e = energie(prim(1),prim(3),gamma,b)
-        eR = energie(primR(1),primR(3),gamma,b)
+        eL = energie(primL(1),primL(3))
+        e = energie(prim(1),prim(3))
+        eR = energie(primR(1),primR(3))
 
         ! j+1/2
         ! Estimation de SL et SR sur cette interface
-        call celerite_hyb(prim(1), prim(2),prim(3),primR(1), primR(2), primR(3),gamma,SL,SR)
+        call celerite_hyb(prim(1), prim(2),prim(3),primR(1), primR(2), primR(3),SL,SR)
         var = flux_hllc(prim(1), prim(2), e, prim(3), primR(1), primR(2), eR, primR(3), SL, SR)
 
         ! j-1/2
-        call celerite_hyb(primL(1), primL(2),primL(3),prim(1), prim(2), prim(3),gamma,SL,SR)
+        call celerite_hyb(primL(1), primL(2),primL(3),prim(1), prim(2), prim(3),SL,SR)
         var2 = flux_hllc(primL(1), primL(2), eL, primL(3), prim(1),prim(2), e, prim(3), SL, SR)     
        
         ! Mis a jour de la solution
@@ -94,7 +94,7 @@ program prog
       open(unit=4,file='out.txt')
 
       Do j=1,N
-           write(4,*) xmin + j*(xmax-xmin)/(N),primitive(U1(j), U2(j), U3(j),gamma)
+           write(4,*) xmin + j*(xmax-xmin)/(N),primitive(U1(j), U2(j), U3(j))
       EndDo    
 
       close(4)

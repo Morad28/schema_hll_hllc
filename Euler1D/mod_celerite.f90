@@ -13,10 +13,10 @@ contains
 
   end function a
 
-  subroutine celerite_iso(rhoL,uL,pL,rhoR,uR,pR,gamma,SL,SR) 
+  subroutine celerite_iso(rhoL,uL,pL,rhoR,uR,pR,SL,SR) 
     
     implicit none
-    real, intent(in) :: rhoL,uL,pL,rhoR,uR,pR,gamma
+    real, intent(in) :: rhoL,uL,pL,rhoR,uR,pR
     real :: SL, SR, uEtoile, aEtoile, aL, aR
 
     aL = a(rhoL,pL,gamma)
@@ -29,10 +29,10 @@ contains
     !print* , " Call", aL, aR, uEtoile, aEtoile , rhoL,uL,pL,rhoR,uR,pR,SL,SR
   end subroutine celerite_iso
 
-  subroutine celerite_lin(rhoL,uL,pL,rhoR,uR,pR,gamma,SL,SR)
+  subroutine celerite_lin(rhoL,uL,pL,rhoR,uR,pR,SL,SR)
 
     implicit None 
-    real, intent(in) :: rhoL,uL,pL,rhoR,uR,pR,gamma
+    real, intent(in) :: rhoL,uL,pL,rhoR,uR,pR
     real :: SL, SR, uEtoile, aLEtoile, aREtoile, pEtoile, rhoLEtoile, rhoREtoile, aBarre, rhoBarre,aL, aR
     
     aL = a(rhoL,pL,gamma)
@@ -53,11 +53,11 @@ contains
 
     end subroutine celerite_lin
 
-    subroutine celerite_hyb(rhoL,uL,pL,rhoR,uR,pR,gamma,SL,SR)
+    subroutine celerite_hyb(rhoL,uL,pL,rhoR,uR,pR,SL,SR)
 
       implicit None 
-      real, intent(in) :: rhoL,uL,pL,rhoR,uR,pR,gamma
-      real :: pEtoile, rhoBarre, aBarre, SL, SM, SR, ppvrs, aL, aR, qL, qR
+      real, intent(in) :: rhoL,uL,pL,rhoR,uR,pR
+      real :: pEtoile, rhoBarre, aBarre, SL, SR, ppvrs, aL, aR, qL, qR
 
       aL = a(rhoL,pL,gamma)
       aR = a(rhoR,pR,gamma)

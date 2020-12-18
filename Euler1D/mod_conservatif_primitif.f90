@@ -5,21 +5,21 @@ module mod_conservatif_primitif
 contains 
 
   ! Transforme les variables primitives en conservatives
-  function conservatif(rho,u,p,gamma) 
+  function conservatif(rho,u,p) 
     
     implicit None
-    real, intent(in) :: rho,u,p,gamma
+    real, intent(in) :: rho,u,p
     real, dimension(1:3) :: conservatif
 
     conservatif(1) = rho
     conservatif(2) = rho*u
-    conservatif(3) = rho*((u**2)/2+energie(rho,p,gamma,b))
+    conservatif(3) = rho*((u**2)/2+energie(rho,p))
   end function conservatif
 
-  function primitive(x1,x2,x3,gamma) 
+  function primitive(x1,x2,x3) 
     
     implicit None
-    real, intent(in) :: x1,x2,x3,gamma
+    real, intent(in) :: x1,x2,x3
     real, dimension(1:3) :: primitive
 
     primitive(1) = x1 ! rho
