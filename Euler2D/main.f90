@@ -37,7 +37,7 @@ program prog
       dx = 1./(N)
 
       ! Choix du cas test
-      call Cas_test(3)
+      call Cas_test(4)
       ! Conditions initiales t = 0 
       call Initialisation(u1i,u2i,u3i,u4i)
       U_1 = u1i
@@ -63,8 +63,8 @@ program prog
 
         ! j+1/2
         ! Estimation de SL et SR sur cette interface
-        call celerite_iso(prim(1), prim(2),prim(4),primR(1), primR(2), primR(4),SL,SR)
-        var = flux_hllc_x(prim(1), prim(2),prim(3), e, prim(4), primR(1), primR(2), primR(3), eR, primR(4), SL, SR)
+        call celerite_hyb(prim(1), prim(2),prim(4),primR(1), primR(2), primR(4),SL,SR)
+        var = flux_HLLx(prim(1), prim(2),prim(3), e, prim(4), primR(1), primR(2), primR(3), eR, primR(4), SL, SR)
         flux1(k) = var(1)
         flux2(k) = var(2)
         flux3(k) = var(3)
@@ -79,10 +79,10 @@ program prog
 
         ! j+1/2
         ! Estimation de SL et SR sur cette interface
-        call celerite_iso(prim(1), prim(3),prim(4),primR(1), primR(3), primR(4),SL,SR)
+        call celerite_hyb(prim(1), prim(3),prim(4),primR(1), primR(3), primR(4),SL,SR)
         !SL = -5.; SR = 5.
         !print*, tn,k ,SL, SR
-        var = flux_hllc_y(prim(1), prim(2),prim(3), e, prim(4), primR(1), primR(2), primR(3), eR, primR(4), SL, SR)
+        var = flux_HLLy(prim(1), prim(2),prim(3), e, prim(4), primR(1), primR(2), primR(3), eR, primR(4), SL, SR)
         fluy1(k) = var(1)
         fluy2(k) = var(2)
         fluy3(k) = var(3)

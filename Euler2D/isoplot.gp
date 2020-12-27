@@ -4,13 +4,13 @@ set dgrid3d
 set key at screen 1, 0.9 right top vertical Right noreverse enhanced autotitle nobox
 set style textbox  opaque margins  0.5,  0.5 fc  bgnd noborder linewidth  1.0
 set view 60, 30, 0.85, 1.1
-set samples 20, 20
-set isosamples 21, 21
+set samples 50, 50
+set isosamples 250, 250
 set contour base
-set cntrparam levels 21
-set cntrparam levels incremental 0.1,0.05,0.95
+set cntrparam levels 31
+set cntrparam levels incremental 1,0.005,1.8
 set style data lines
-set title "contour by increments (every 10, starting at -100)" 
+set title "contour" 
 set xlabel "X axis" 
 set xrange [ * : * ] noreverse writeback
 set x2range [ * : * ] noreverse writeback
