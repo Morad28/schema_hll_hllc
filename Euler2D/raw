@@ -1,0 +1,22 @@
+          ! if (j==0) then
+          !   prim = primitive(u1i(j),u2i(j),u3i(j),gamma)
+          !   primR =primitive(u1i(j+1),u2i(j+1),u3i(j+1),gamma)
+          !   e = energie(prim(1),prim(3),gamma,b)
+          !   eR = energie(primR(1),primR(3),gamma,b)
+          !   call celerite_iso(prim(1), prim(2),prim(3),primR(1), primR(2), primR(3),gamma,SL,SR)
+          !   var = flux_hllc(prim(1), prim(2), e, prim(3), primR(1), primR(2), eR, primR(3), SL, SR)
+          !   U1(j) = u1i(j) - (dt/dx)*(var(1))
+          !   U2(j) = u2i(j) - (dt/dx)*(var(2))
+          !   U3(j) = u3i(j) - (dt/dx)*(var(3))
+          ! end if
+          ! if (j==0) then
+          !   primL = primitive(u1i(j-1),u2i(j-1),u3i(j-1),gamma)
+          !   prim = primitive(u1i(j),u2i(j),u3i(j),gamma)
+          !   eL = energie(primL(1),primL(3),gamma,b)
+          !   e = energie(prim(1),prim(3),gamma,b)
+          !   call celerite_iso(primL(1), primL(2),primL(3),prim(1), prim(2), prim(3),gamma,SL,SR)
+          !   var2 = flux_hllc(primL(1), primL(2), eL, primL(3), prim(1),prim(2), e, prim(3), SL, SR) 
+          !   U1(j) = u1i(j) - (dt/dx)*(-var2(1))
+          !   U2(j) = u2i(j) - (dt/dx)*(-var2(2))
+          !   U3(j) = u3i(j) - (dt/dx)*(-var2(3))
+          ! end if

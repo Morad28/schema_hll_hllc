@@ -23,11 +23,11 @@ program prog
       Allocate(flux1(N-1))
       Allocate(flux2(N-1))
       Allocate(flux3(N-1))
-
+      
+      ! Pas du maillage
       dx = 1./(N)
-      !dt = 0.00001
-  
 
+      ! Choix du cas test
       call Cas_test(5)
       ! Conditions initiales t = 0 
       call Initialisation(u1i,u2i,u3i)
@@ -82,13 +82,23 @@ program prog
     
       
     end do
+
+    U1(1)=u1i(2)
+    U2(1)=u2i(2)
+    U3(1)=u3i(2)
+    U1(N)=u1i(N-1)
+    U2(N)=u2i(N-1)
+    U3(N)=u3i(N-1)
+
+    u1i = U1
+    u2i = U2
+    u3i = U3 
+
       ! Quitter le programme si la positivite de pression est violee
       if (Bool==1) EXIT
       
-      u1i = U1
-      u2i = U2
-      u3i = U3 
-      print*, tn
+
+      !print*, tn
     endDo Loop
 
     ! Sortie
