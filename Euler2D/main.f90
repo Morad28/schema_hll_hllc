@@ -9,7 +9,7 @@ program prog
     !===========================
     
       Implicit None
-      real:: dx, dt, tn=0, e, eR, SR, SL, Smax
+      real::  dt, tn=0, e, eR, SR, SL, Smax
       real, Dimension(1:4) :: var, primR, prim
       real, Dimension(:), Allocatable::  u1i, u2i, u3i, u4i, flux1, flux2, flux3, flux4, fluy1, fluy2, fluy3, fluy4
       real, Dimension(:), Allocatable:: U_1, U_2, U_3, U_4
@@ -37,7 +37,7 @@ program prog
       dx = 1./(N)
 
       ! Choix du cas test
-      call Cas_test(7)
+      call Cas_test(2)
       ! Conditions initiales t = 0 
       call Initialisation(u1i,u2i,u3i,u4i)
       U_1 = u1i
@@ -80,8 +80,6 @@ program prog
         ! j+1/2
         ! Estimation de SL et SR sur cette interface
         call celerite_hyb(prim(1), prim(3),prim(4),primR(1), primR(3), primR(4),SL,SR)
-        !SL = -5.; SR = 5.
-        !print*, tn,k ,SL, SR
         var = flux_hllc_y(prim(1), prim(2),prim(3), e, prim(4), primR(1), primR(2), primR(3), eR, primR(4), SL, SR)
         fluy1(k) = var(1)
         fluy2(k) = var(2)
@@ -166,17 +164,9 @@ Do j=1,N
   Do i=1,N
     k = i + (j-1)*N
      write(4,*) i*dx, j*dx , primitive(u1i(k), u2i(k), u3i(k), u4i(k)), flux1(k)
+     !if (i==N) write(4,*)
   EndDo   
 Enddo 
 close(4)
-open(unit=5,file='out1D.txt')
-Do j=1,N
-  Do i=1,N
-    if (i==100)then
-    k = i + (j-1)*N
-     write(5,*) i*dx, j*dx , primitive(u1i(k), u2i(k), u3i(k), u4i(k))
-    endif
-  EndDo   
-Enddo 
-close(5)
+
 end program prog
