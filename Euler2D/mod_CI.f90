@@ -4,7 +4,7 @@ module mod_CI
   implicit none
   real :: xmin = 0, xmax = 1, ymin = 0, ymax = 1, x0, x1
   real :: p1,p2,p3,p4,rho1,rho2,rho3,rho4,u1,u2,u3,u4,v1,v2,v3,v4, tout 
-  Integer :: N=101, NN
+  Integer :: N=401, NN
 
   contains
   subroutine Cas_test(n)
@@ -45,16 +45,36 @@ module mod_CI
       x0 = 0.5 !
     end if
     if (n==5) then
-      !rhoL = 1.; uL = -19.59745; pL = 1000.; rhoR = 1.; uR = -19.59745; pR = 0.01; tout = 0.012; x0 = 0.8
+      p1 = 1.; rho1 = 1.; u1 = -0.75; v1 = -0.5
+      p2 = 1.; rho2 = 2. ; u2 = -0.75; v2 = 0.5; 
+      p3 = 1.; rho3 = 1.; u3 = 0.75; v3 = 0.5;
+      p4 = 1.; rho4 = 3.; u4 = 0.75; v4 = -0.5;
+      tout = 0.23
+      x0 = 0.5 !
     end if
     if (n==6) then
-      !rhoL = 1.4; uL = 0.; pL = 1.; rhoR = 1.; uR = 0.; pR = 1.; tout = 2.; x0 = 0.5
+      p1 = 1.; rho1 = 1.; u1 = 0.75; v1 = -0.5
+      p2 = 1.; rho2 = 2. ; u2 = 0.75; v2 = 0.5; 
+      p3 = 1.; rho3 = 1.; u3 = -0.75; v3 = 0.5;
+      p4 = 1.; rho4 = 3.; u4 = -0.75; v4 = -0.5;
+      tout = 0.3
+      x0 = 0.5 !
     end if
     if (n==7) then
-      !rhoL = 1.4; uL = 0.1; pL = 1.; rhoR = 1.; uR = 0.1; pR = 1.; tout = 2.; x0 = 0.5
+      p1 = 1.; rho1 = 1.; u1 = 0.1; v1 = 0.1
+      p2 = 0.4; rho2 = 0.5197 ; u2 = -0.6259; v2 = 0.1; 
+      p3 = 0.4; rho3 = 0.8; u3 = 0.1; v3 = 0.1;
+      p4 = 0.4; rho4 = 0.5197; u4 = 0.1; v4 = -0.6259;
+      tout = 0.25
+      x0 = 0.5 !
     end if
     if (n==8) then
-      !rhoL = 1.; uL = 0.; pL = 1000.; rhoM = 1.; uM = 0.; pM = 0.01; rhoR = 1.; uR = 0.; pR = 100.; tout = 0.028 ;x0 = 0.1; x1 = 0.9
+      p1 = 0.4; rho1 = 0.5197; u1 = 0.1; v1 = 0.1
+      p2 = 1.; rho2 = 1. ; u2 = -0.6259; v2 = 0.1; 
+      p3 = 1.; rho3 = 0.8; u3 = 0.1; v3 = 0.1;
+      p4 = 1.; rho4 = 1.; u4 = 0.1; v4 = -0.6259;
+      tout = 0.25
+      x0 = 0.5 !
     end if
 
 
