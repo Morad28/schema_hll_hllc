@@ -37,7 +37,7 @@ program prog
       dx = 1./(N)
 
       ! Choix du cas test
-      call Cas_test(2)
+      call Cas_test(12)
       ! Conditions initiales t = 0 
       call Initialisation(u1i,u2i,u3i,u4i)
       U_1 = u1i
@@ -164,7 +164,7 @@ Do j=1,N
   Do i=1,N
     k = i + (j-1)*N
      write(4,*) i*dx, j*dx , primitive(u1i(k), u2i(k), u3i(k), u4i(k)), flux1(k)
-     !if (i==N) write(4,*)
+     if (i==N) write(4,*)
   EndDo   
 Enddo 
 close(4)
