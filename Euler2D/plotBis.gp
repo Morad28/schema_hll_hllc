@@ -1,8 +1,8 @@
-set xrange [-1:1]
+set xrange [0:1]
 set yrange [0:1]
 set iso 100
 set samp 100
-set cntrparam levels 50
+set cntrparam levels 30
 unset key
 unset surface
 set view map

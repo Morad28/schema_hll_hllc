@@ -2,9 +2,9 @@ module mod_CI
   use mod_energie
   use mod_constante
   implicit none
-  real :: xmin = -1, xmax = 2., ymin = -1, ymax = 2., x0, x1
+  real :: xmin = 0, xmax = 1., ymin = 0, ymax = 1., x0, x1
   real :: p1,p2,p3,p4,rho1,rho2,rho3,rho4,u1,u2,u3,u4,v1,v2,v3,v4, tout 
-  Integer :: N=401, NN
+
 
   contains
   subroutine Cas_test(n)

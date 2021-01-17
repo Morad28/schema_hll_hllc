@@ -1,6 +1,7 @@
 module mod_celerite
   use mod_constante
     implicit none
+    real :: SL = 0, SR = 0
 contains 
 
   ! Calcule la vitesse du son (pour un gaz parfait)
