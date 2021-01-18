@@ -4,8 +4,6 @@ Module mod_flux
   use mod_celerite
   use mod_constante
     implicit none
-    real, Dimension(1:N*N)::  u1i, u2i, u3i, u4i
-    real, dimension(1:N*N-N):: flux1, flux2, flux3, flux4, fluy1, fluy2, fluy3, fluy4
     real, Dimension(1:N*N):: U_1, U_2, U_3, U_4
 contains 
 ! Fonction flux par rapport a x

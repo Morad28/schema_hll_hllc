@@ -1,9 +1,9 @@
-set xrange [0:1]
-set yrange [0:1]
+#set xrange 
+#set yrange 
 set iso 100
 set samp 100
-set cntrparam levels 30
-set terminal gif animate delay 15 loop 40
+set cntrparam levels 50
+set terminal gif animate delay 19 loop 40
 set output "anim.gif"
 
 unset key

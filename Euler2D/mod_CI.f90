@@ -3,14 +3,42 @@ module mod_CI
   use mod_constante
   implicit none
   real :: xmin = 0, xmax = 1., ymin = 0, ymax = 1., x0, x1
-  real :: p1,p2,p3,p4,rho1,rho2,rho3,rho4,u1,u2,u3,u4,v1,v2,v3,v4, tout 
-
+  real :: p1,p2,p3,p4,rho1,rho2,rho3,rho4,u1,u2,u3,u4,v1,v2,v3,v4,tout 
+  real, dimension(1:N) :: X, Y
+  real, Dimension(1:N*N)::  u1i, u2i, u3i, u4i
+  
 
   contains
   subroutine Cas_test(n)
     
     implicit None
     integer, intent(in) :: n
+    if (n==-2) then
+      p4 = 0.1; rho4 = 0.125; v4 = 0.; u4 = 0.
+      p1 = 0.4; rho1 = 1. ; v1 = 2.; u1 = 0.; 
+      p2 = 0.4; rho2 = 1.; v2 = 2; u2 = 0;
+      p3 = 0.1; rho3 = 0.125; v3 = 0.; u3 =  0.;
+      tout = 0.2
+      x0 = 0.5 
+    end if
+
+    if (n==-1) then
+      p1 = 0.1; rho1 = 0.125; u1 = 0.; v1 = 0.
+      p2 = 0.4; rho2 = 1. ; u2 = -2.; v2 = 0.; 
+      p3 = 0.4; rho3 = 1.; u3 = -2; v3 = 0;
+      p4 = 0.1; rho4 = 0.125; u4 = 0.; v4 = - 0.;
+      tout = 0.2
+      x0 = 0.5 
+    end if
+
+    if (n==0) then
+      p1 = 0.1; rho1 = 0.125; v1 = 0.; u1 = 0.
+      p4 = 0.4; rho4 = 1. ; v4 = -2.; u4 = 0.; 
+      p3 = 0.4; rho3 = 1.; v3 = -2; u3 = 0;
+      p2 = 0.1; rho2 = 0.125; v2 = 0.; u2 = - 0.;
+      tout = 0.2
+      x0 = 0.5 
+    end if
 
     if (n==1) then
       p1 = 1.; rho1 = 1.; u1 = 0.; v1 = 0.
@@ -117,14 +145,10 @@ module mod_CI
     implicit none 
   
     real, dimension(1:N*N) :: U_1, U_2, U_3, U_4
-    real, dimension(1:N) :: X, Y
+
     real ::  e1, e2, e3, e4
     integer :: i, k, j
 
-    do i = 1, N
-      X(i) = xmin + i*(xmax-xmin)/(N)
-      Y(i) = ymin + i*(ymax-ymin)/(N)
-    end do
 
     e1=energie(rho1,p1)
     e2=energie(rho2,p2)
