@@ -69,6 +69,7 @@ contains
 
 
       pEtoile = max(0., ppvrs)
+      !pEtoile = 0.5*(pL+pR)-0.5*(uR-uL)*rhoBarre*aBarre
       !pEtoile = pL+rhoL*(uL-SL)*(uL-SM)
       !pEtoile = ((aL+0.5*(uL-uR)*(gamma-1))+(aR+0.5*(uL-uR)*(gamma-1)))/()
 

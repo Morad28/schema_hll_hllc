@@ -15,44 +15,38 @@ program prog
 
       Character*21::name
 
-      ! Allocate(U_1(NN))
-      ! Allocate(U_2(NN))
-      ! Allocate(U_3(NN))
-      ! Allocate(U_4(NN))
-      ! Allocate(u1i(NN))
-      ! Allocate(u2i(NN))
-      ! Allocate(u3i(NN))
-      ! Allocate(u4i(NN))
-      ! Allocate(flux1(NN-N))
-      ! Allocate(flux2(NN-N))
-      ! Allocate(flux3(NN-N))
-      ! Allocate(flux4(NN-N))
-      ! Allocate(fluy1(NN-N))
-      ! Allocate(fluy2(NN-N))
-      ! Allocate(fluy3(NN-N))
-      ! Allocate(fluy4(NN-N))
-      ! Vecteurs X et Y
+      ! ===== Vecteurs X et Y ====
       do i = 1, N
         X(i) = xmin + i*(xmax-xmin)/(N)
         Y(i) = ymin + i*(ymax-ymin)/(N)
       end do
-      ! Pas du maillage
+
+      ! ===== Pas du maillage ====
       dx = 1./(N)
-      ! Choix du cas test
-      call Cas_test(2)
-      ! Conditions initiales t = 0 
+
+      ! ==== Choix du cas test ====
+      call Cas_test(3)
+
+      ! ==== Conditions initiales t = 0 ====
       call Initialisation(u1i,u2i,u3i,u4i)
       U_1 = u1i
       U_2 = u2i
       U_3 = u3i
       U_4 = u4i
 
-      m=0
+      call Rename(l,name)
+      call write
 
+      m=0
+      print*, theta
       Loop : do while (tn<tout)
 
       ! Mis a jour de la solution 
-      Call Update
+      ! Ordre 1
+      !Call Update
+
+      ! Ordre 2
+      Call Update_2
 
       ! Sort de la boucle si la pression est negative 
       if (Bool==1) EXIT
@@ -67,8 +61,8 @@ program prog
       end if
       m=m+1
       endDo Loop
-
-    name = 'output/out.txt'
+    l=l+1  
+    call Rename(l,name)
     call write
       
     contains
@@ -111,6 +105,7 @@ program prog
         ! ==================================
         ! On recupere rho, u et p (variables primitives)  
         ! ==== Axe x
+
         ! === Ordre 1
 
         prim = primitive(u1i(k),u2i(k),u3i(k), u4i(k))
@@ -118,19 +113,10 @@ program prog
         e = energie(prim(1),prim(4))
         eR = energie(primR(1),primR(4))
         
-        ! === Ordre 2 
-
-        ! UW = get_U(i+1,j,X(i)+dx*0.5,Y(j))
-        ! UE = get_U(i,j,X(i)+dx*0.5,Y(j))
-        ! prim = primitive(UE(1),UE(2),UE(3),UE(4))
-        ! primR = primitive(UW(1),UW(2),UW(3),UW(4))
-        ! e = energie(prim(1),prim(4))
-        ! eR = energie(primR(1),primR(4))
-
         ! == Calcul du flux
         ! j+1/2
         ! Estimation de SL et SR sur cette interface
-        call celerite_iso(prim(1), prim(2),prim(4),primR(1), primR(2), primR(4),SL,SR)
+        call celerite_hyb(prim(1), prim(2),prim(4),primR(1), primR(2), primR(4),SL,SR)
         var = flux_hllc_x(prim(1), prim(2),prim(3), e, prim(4), primR(1), primR(2), primR(3), eR, primR(4), SL, SR)
         
         flux1(k) = var(1)
@@ -138,6 +124,7 @@ program prog
         flux3(k) = var(3)
         flux4(k) = var(4)
         Smax = max(Smax, abs(SL), abs(SR))
+
         ! ==================================
 
         ! ==================================
@@ -148,18 +135,9 @@ program prog
         primR = primitive(u1i(k+N),u2i(k+N),u3i(k+N),u4i(k+N))
         eR = energie(primR(1),primR(4))
 
-        ! === Ordre 2
-        
-        ! US = get_U(i,j+1,X(i),Y(j)+0.5*dx)
-        ! UN = get_U(i,j,X(i),Y(j)+dx*0.5)
-        ! prim = primitive(UN(1),UN(2),UN(3),UN(4))
-        ! primR = primitive(US(1),US(2),US(3),US(4))
-        ! e = energie(prim(1),prim(4))
-        ! eR = energie(primR(1),primR(4))
-
         ! j+1/2
         ! Estimation de SL et SR sur cette interface
-        call celerite_iso(prim(1), prim(3),prim(4),primR(1), primR(3), primR(4),SL,SR)
+        call celerite_hyb(prim(1), prim(3),prim(4),primR(1), primR(3), primR(4),SL,SR)
         var = flux_hllc_y(prim(1), prim(2),prim(3), e, prim(4), primR(1), primR(2), primR(3), eR, primR(4), SL, SR)
         fluy1(k) = var(1)
         fluy2(k) = var(2)
@@ -180,38 +158,41 @@ program prog
     dt = CFL*dx/(Smax)
     tn = tn + dt
     print* , tn, "pas =", dt,"CFL =" ,(dt/dx)*Smax
+    !Ordre 1 
     do j = 2, N-1
       do i = 2, N-1
-      k = i+(j-1)*N
+      
+        k = i+(j-1)*N
         ! Mis a jour de la solution
         u1i(k) = u1i(k) - (dt/dx)*(flux1(k) - flux1(k-1) + fluy1(k)-fluy1(k-N))
         u2i(k) = u2i(k) - (dt/dx)*(flux2(k) - flux2(k-1) + fluy2(k)-fluy2(k-N))
         u3i(k) = u3i(k) - (dt/dx)*(flux3(k) - flux3(k-1) + fluy3(k)-fluy3(k-N))
         u4i(k) = u4i(k) - (dt/dx)*(flux4(k) - flux4(k-1) + fluy4(k)-fluy4(k-N))
+      
       end do
     end do
     do j = 1, N
       do i = 1, N
       k = i+(j-1)*N
-      if ( i == 1) then
+      if ( i == 1 ) then
         u1i(k) = u1i(k+1)
         u2i(k) = u2i(k+1) 
         u3i(k) = u3i(k+1) 
         u4i(k) = u4i(k+1) 
       endif
-      if ( i == N) then
+      if ( i == N ) then
         u1i(k) = u1i(k-1)
         u2i(k) = u2i(k-1) 
         u3i(k) = u3i(k-1) 
         u4i(k) = u4i(k-1) 
       endif
-      if ( j == 1) then
+      if ( j == 1 ) then
         u1i(k) = u1i(k+N)
         u2i(k) = u2i(k+N) 
         u3i(k) = u3i(k+N) 
         u4i(k) = u4i(k+N) 
       endif
-      if ( j == N) then
+      if ( j == N ) then
         u1i(k) = u1i(k-N)
         u2i(k) = u2i(k-N) 
         u3i(k) = u3i(k-N) 
@@ -219,7 +200,154 @@ program prog
       endif
     end do
     end do    
+   
 
     end subroutine Update
+
+! ======================== UPDATE_2 ======================== 
+   
+    subroutine Update_2
+      implicit None 
+      real, dimension(1:4) :: UN, US, UE, UW
+      real, Dimension(1:4) :: var, primR, prim
+      real, dimension(1:N*N-N):: flux1, flux2, flux3, flux4, fluy1, fluy2, fluy3, fluy4
+
+      Smax = 0
+      do j = 2, N-2
+       Do i = 2, N-2
+        k = i+(j-1)*N
+        ! ==================================
+        ! On recupere rho, u et p (variables primitives)  
+        ! ==== Axe x
+
+          UW = get_U( i+1 , j , X(i) + dx*0.5 , Y(j) )
+          UE = get_U( i , j , X(i) + dx*0.5 , Y(j) )
+          prim = primitive(UE(1),UE(2),UE(3),UE(4))
+          primR = primitive(UW(1),UW(2),UW(3),UW(4))
+          e = energie(prim(1),prim(4))
+          eR = energie(primR(1),primR(4))
+
+        ! == Calcul du flux
+        ! j+1/2
+        ! Estimation de SL et SR sur cette interface
+        call celerite_hyb(prim(1), prim(2),prim(4),primR(1), primR(2), primR(4),SL,SR)
+        var = flux_hllc_x(prim(1), prim(2),prim(3), e, prim(4), primR(1), primR(2), primR(3), eR, primR(4), SL, SR)
+        
+        flux1(k) = var(1)
+        flux2(k) = var(2)
+        flux3(k) = var(3)
+        flux4(k) = var(4)
+        Smax = max(Smax, abs(SL), abs(SR))
+
+        ! ==================================
+
+        ! ==================================
+        ! On recupere rho, u et p (variables primitives)  
+        ! ==== Axe y
+        ! === Ordre 2
+          US = get_U(i,j+1,X(i),Y(j)+0.5*dx)
+          UN = get_U(i,j,X(i),Y(j)+dx*0.5)
+          prim = primitive(UN(1),UN(2),UN(3),UN(4))
+          primR = primitive(US(1),US(2),US(3),US(4))
+          e = energie(prim(1),prim(4))
+          eR = energie(primR(1),primR(4))
+
+        ! j+1/2
+        ! Estimation de SL et SR sur cette interface
+        call celerite_hyb(prim(1), prim(3),prim(4),primR(1), primR(3), primR(4),SL,SR)
+        var = flux_hllc_y(prim(1), prim(2),prim(3), e, prim(4), primR(1), primR(2), primR(3), eR, primR(4), SL, SR)
+        fluy1(k) = var(1)
+        fluy2(k) = var(2)
+        fluy3(k) = var(3)
+        fluy4(k) = var(4)
+        Smax = max(Smax, abs(SL), abs(SR))
+        ! ==================================
+        ! Verification positivite de la pression
+        if (prim(4)<0) then
+          print*, "ERREUR PRESSION NEGATIVE", k, tn,  prim
+          Bool=1
+          EXIT
+        end if
+      
+    end do
+    end do
+    ! Mis a jour du pas 
+    dt = CFL*dx/(Smax)
+    tn = tn + dt
+    print* , tn, "pas =", dt,"CFL =" ,(dt/dx)*Smax
+    ! Ordre 1 
+    ! do j = 2, N-1
+    !   do i = 2, N-1
+    ! Ordre 2
+    do j = 3, N-2
+      do i = 3, N-2
+      
+        k = i+(j-1)*N
+        ! Mis a jour de la solution
+        u1i(k) = u1i(k) - (dt/dx)*(flux1(k) - flux1(k-1) + fluy1(k)-fluy1(k-N))
+        u2i(k) = u2i(k) - (dt/dx)*(flux2(k) - flux2(k-1) + fluy2(k)-fluy2(k-N))
+        u3i(k) = u3i(k) - (dt/dx)*(flux3(k) - flux3(k-1) + fluy3(k)-fluy3(k-N))
+        u4i(k) = u4i(k) - (dt/dx)*(flux4(k) - flux4(k-1) + fluy4(k)-fluy4(k-N))
+      
+      end do
+    end do
+    do j = 1, N
+      do i = 1, N
+      k = i+(j-1)*N
+
+      if ( i == 2 ) then
+        u1i(k) = u1i(k+1)
+        u2i(k) = u2i(k+1) 
+        u3i(k) = u3i(k+1) 
+        u4i(k) = u4i(k+1) 
+      endif
+      if ( i == N-1 ) then
+        u1i(k) = u1i(k-1)
+        u2i(k) = u2i(k-1) 
+        u3i(k) = u3i(k-1) 
+        u4i(k) = u4i(k-1) 
+      endif
+      if ( j == 2 ) then
+        u1i(k) = u1i(k+N)
+        u2i(k) = u2i(k+N) 
+        u3i(k) = u3i(k+N) 
+        u4i(k) = u4i(k+N) 
+      endif
+      if ( j == N-1 ) then
+        u1i(k) = u1i(k-N)
+        u2i(k) = u2i(k-N) 
+        u3i(k) = u3i(k-N) 
+        u4i(k) = u4i(k-N) 
+      endif
+
+      if ( i == 1 ) then
+        u1i(k) = u1i(k+1)
+        u2i(k) = u2i(k+1) 
+        u3i(k) = u3i(k+1) 
+        u4i(k) = u4i(k+1) 
+      endif
+      if ( i == N ) then
+        u1i(k) = u1i(k-1)
+        u2i(k) = u2i(k-1) 
+        u3i(k) = u3i(k-1) 
+        u4i(k) = u4i(k-1) 
+      endif
+      if ( j == 1 ) then
+        u1i(k) = u1i(k+N)
+        u2i(k) = u2i(k+N) 
+        u3i(k) = u3i(k+N) 
+        u4i(k) = u4i(k+N) 
+      endif
+      if ( j == N ) then
+        u1i(k) = u1i(k-N)
+        u2i(k) = u2i(k-N) 
+        u3i(k) = u3i(k-N) 
+        u4i(k) = u4i(k-N) 
+      endif
+    end do
+    end do    
+   
+
+    end subroutine Update_2
 
     end program prog

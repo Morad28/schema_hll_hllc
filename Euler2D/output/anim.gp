@@ -12,6 +12,6 @@ set view map
 set contour base
 set pm3d 
 
-do for [i=11:40] { splot sprintf('sol%d.dat', i) using 1:2:3 w lines lw 1;  reread }
-splot "out.txt" u 1:2:3 w lines lw 1
+do for [i=11:50] { splot sprintf('sol%d.dat', i) using 1:2:3 w lines lw 1;  reread }
+
     

@@ -186,7 +186,7 @@ function flux_HLLx(rhoL,uL,vL,eL,pL,rhoR,uR,vR,eR,pR,SL,SR)
       aR = a(rhoR,pR,gamma)
       aBarre = 0.5*(aL+aR)
       rhoBarre = 0.5*(rhoL+rhoR)
-      !SM = (pR-pL+rhoL*uL*(SL-uL)-rhoR*uR*(SR-uR))/(rhoL*(SL-uL)-rhoR*(SR-uR))
+      !SM = (pR-pL+rhoL*vL*(SL-vL)-rhoR*vR*(SR-vR))/(rhoL*(SL-vL)-rhoR*(SR-vR))
       
       SM = 0.5*(vL+vR)-0.5*(pR-pL)/(rhoBarre*aBarre)
       flux_L = flux_y(rhoL,uL,vL,eL,pL)

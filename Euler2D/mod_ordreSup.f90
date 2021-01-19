@@ -1,7 +1,6 @@
 module mod_ordreSup
     use mod_constante
     use mod_CI
-    !real :: UN,US,UE,UW
     implicit none
 contains
     function minmod(u1,u2,u3)
@@ -11,13 +10,14 @@ contains
         real, dimension(1:4) :: minmod
         integer :: i 
 
-        minmod = 0
         do i = 1, 4 
             if (u1(i)>0 .AND. u2(i)>0 .AND. u3(i)>0) then
                 minmod(i) = min(u1(i),u2(i),u3(i))
-            endif
-            if (u1(i)<0 .AND. u2(i)<0 .AND. u3(i)<0) then
+            
+            else if (u1(i)<0 .AND. u2(i)<0 .AND. u3(i)<0) then
                minmod(i) = max(u1(i),u2(i),u3(i))
+            else 
+                minmod(i) = 0
             endif
         end do 
     end function minmod
