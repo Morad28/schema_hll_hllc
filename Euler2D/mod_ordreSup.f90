@@ -25,19 +25,21 @@ contains
     function polij(UCentre,Ugauche,Udroite,Ubas,Uhaut,x,y,xi,yj)
         implicit none
         real, intent(in) :: x,y,xi,yj
-        real, dimension(1:4) :: polij, Ux, Uy, UCentre,Ugauche,Udroite,Ubas,Uhaut
+        real, dimension(1:4), intent(in) :: UCentre,Ugauche,Udroite,Ubas,Uhaut
+        real, dimension(1:4) :: polij, Ux, Uy
         real :: C
-
+        !print*, 'pol', dx
         C=theta/dx
         Ux = minmod(C*(Udroite-Ucentre),(Udroite-Ugauche)/(2*dx),C*(Ucentre-Ugauche))
         Uy = minmod(C*(Uhaut-Ucentre),(Uhaut-Ubas)/(2*dx),C*(Ucentre-Ubas))
 
-        polij = Ucentre + Ux*(x-xi)+Uy*(y-yj)
+        polij = Ucentre + (Ux*(x-xi)+Uy*(y-yj))
+
     end function polij
 
     function Uk(k)
         implicit none 
-        integer :: k
+        integer, intent(in) :: k
         real, dimension(1:4) :: Uk
 
         Uk(1) = u1i(k)
@@ -47,15 +49,15 @@ contains
 
     end function Uk
 
-    function get_U(i,j,xi,yj)
+    function get_U(id,jd,xi,yj)
         implicit none
         real, intent(in) :: xi,yj 
-        integer, intent(in) :: i,j
+        integer, intent(in) :: id,jd
         real, dimension(1:4) :: get_U
         integer :: k
-        k = i+(j-1)*N
+        k = id+(jd-1)*N
         
-        get_U = polij(Uk(k),Uk(k-1),Uk(k+1),Uk(k-N),Uk(k+N),xi,yj,X(i),Y(j))
+        get_U = polij(Uk(k),Uk(k-1),Uk(k+1),Uk(k-N),Uk(k+N),xi,yj,id*dx,jd*dx)
 
     end function get_U
 end module mod_ordreSup

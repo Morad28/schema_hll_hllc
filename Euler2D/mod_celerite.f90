@@ -14,6 +14,18 @@ contains
 
   end function a
 
+  subroutine estim_vp(rhoL,uL,pL,rhoR,uR,pR,SL,SR)
+    implicit none
+    real, intent(in) :: rhoL,uL,pL,rhoR,uR,pR
+    real :: SL, SR, aL, aR
+
+    aL = a(rhoL,pL,gamma)
+    aR = a(rhoR,pR,gamma)
+
+    SR = max(uR+aR,uL+aL,uR)
+    SL = min(uL-aL,uR-aL,uL)
+  end subroutine
+
   subroutine celerite_iso(rhoL,uL,pL,rhoR,uR,pR,SL,SR) 
     
     implicit none

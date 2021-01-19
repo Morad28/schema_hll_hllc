@@ -4,7 +4,7 @@ module mod_CI
   implicit none
   real :: xmin = 0, xmax = 1., ymin = 0, ymax = 1., x0, x1
   real :: p1,p2,p3,p4,rho1,rho2,rho3,rho4,u1,u2,u3,u4,v1,v2,v3,v4,tout
-  real :: theta = 2
+  real :: theta = 1.3
   real, dimension(1:N) :: X, Y
   real, Dimension(1:N*N)::  u1i, u2i, u3i, u4i
   
