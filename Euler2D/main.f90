@@ -8,7 +8,6 @@ program prog
       use mod_CI
       use mod_ordreSup
     !===========================
-    
       Implicit None
       real ::  dt, tn=0, e, eR, Smax
       Integer :: j, k, i,Bool=0 ,m ,l=10 
@@ -23,25 +22,22 @@ program prog
 
       ! ===== Pas du maillage ====
       dx = 1./(N)
-      print*, dx
+
       ! ==== Choix du cas test ====
-      call Cas_test(3)
+      call Cas_test( 0 )
 
       ! ==== Conditions initiales t = 0 ====
-      call Initialisation(u1i,u2i,u3i,u4i)
+      call Initialisation( u1i , u2i , u3i , u4i )
 
-      call Rename(l,name)
+      call Rename( l , name )
       call write
 
       ! =========== TEST ============
-      ! R1(1)=-1;R1(2)=-1;R1(3)=-11;R1(4)=1
-      ! R2(1)=1;R2(2)=-1;R2(3)=-11;R2(4)=1
-      ! R3(1)=1;R3(2)=1;R3(3)=-11;R3(4)=1
-      ! print*, R1*5+R2
-      ! print*, minmod(R1,R2,R3)
+ 
       ! =============================
 
       m=0
+      ! ========== BOUCLE PRINCIPALE ===========================
       Loop : do while (tn<tout)
 
       ! ============ Mis a jour de la solution =================  
@@ -71,6 +67,7 @@ program prog
     call write
       
     contains
+
     ! ======================== RENAME ========================
     Subroutine Rename(Me,name)
       Implicit None
@@ -121,11 +118,11 @@ program prog
         ! == Calcul du flux
         ! j+1/2
         ! Estimation de SL et SR sur cette interface
-        ! call celerite_iso(prim(1), prim(2),prim(4),primR(1), primR(2), primR(4),SL,SR)
-        ! var = flux_HLLx(prim(1), prim(2),prim(3), e, prim(4), primR(1), primR(2), primR(3), eR, primR(4), SL, SR)
+        call celerite_iso(prim(1), prim(2),prim(4),primR(1), primR(2), primR(4),SL,SR)
+        var = flux_HLLx(prim(1), prim(2),prim(3), e, prim(4), primR(1), primR(2), primR(3), eR, primR(4), SL, SR)
         
-        call celerite_hyb(prim(1), prim(2),prim(4),primR(1), primR(2), primR(4),SL,SR)
-        var = flux_hllc_x(prim(1), prim(2),prim(3), e, prim(4), primR(1), primR(2), primR(3), eR, primR(4), SL, SR)
+        ! call celerite_hyb(prim(1), prim(2),prim(4),primR(1), primR(2), primR(4),SL,SR)
+        ! var = flux_hllc_x(prim(1), prim(2),prim(3), e, prim(4), primR(1), primR(2), primR(3), eR, primR(4), SL, SR)
 
         flux1(k) = var(1)
         flux2(k) = var(2)
@@ -145,11 +142,11 @@ program prog
 
         ! j+1/2
         ! Estimation de SL et SR sur cette interface
-        ! call celerite_iso(prim(1), prim(3),prim(4),primR(1), primR(3), primR(4),SL,SR)
-        ! var = flux_HLLy(prim(1), prim(2),prim(3), e, prim(4), primR(1), primR(2), primR(3), eR, primR(4), SL, SR)
+        call celerite_iso(prim(1), prim(3),prim(4),primR(1), primR(3), primR(4),SL,SR)
+        var = flux_HLLy(prim(1), prim(2),prim(3), e, prim(4), primR(1), primR(2), primR(3), eR, primR(4), SL, SR)
         
-        call celerite_hyb(prim(1), prim(3),prim(4),primR(1), primR(3), primR(4),SL,SR)
-        var = flux_hllc_y(prim(1), prim(2),prim(3), e, prim(4), primR(1), primR(2), primR(3), eR, primR(4), SL, SR)
+        ! call celerite_hyb(prim(1), prim(3),prim(4),primR(1), primR(3), primR(4),SL,SR)
+        ! var = flux_hllc_y(prim(1), prim(2),prim(3), e, prim(4), primR(1), primR(2), primR(3), eR, primR(4), SL, SR)
        
         fluy1(k) = var(1)
         fluy2(k) = var(2)
@@ -220,49 +217,41 @@ program prog
    
     subroutine Update_2
       implicit None 
-      real, dimension(1:4) :: UN, US, UE, UW
+      real, dimension(1:4) :: UL, UR
       real, Dimension(1:4) :: var, primR, prim
       real, dimension(1:N*N-N):: flux1, flux2, flux3, flux4, fluy1, fluy2, fluy3, fluy4
 
       Smax = 0
-      ! do j = 1, N-1
-      !  Do i = 1, N-1
-      !   k = i+(j-1)*N
-      !   prim = primitive(u1i(k),u2i(k),u3i(k), u4i(k))
-      !   primR = primitive(u1i(k+1),u2i(k+1),u3i(k+1), u4i(k+1))
-      !   call celerite_iso(prim(1), prim(2),prim(4),primR(1), primR(2), primR(4),SL,SR)
-      !   Smax = max(Smax, abs(SL), abs(SR))
-      !   primR = primitive(u1i(k+N),u2i(k+N),u3i(k+N),u4i(k+N))
-      !   call celerite_iso(prim(1), prim(3),prim(4),primR(1), primR(3), primR(4),SL,SR)
-      !   Smax = max(Smax, abs(SL), abs(SR))
-      !  end do
-      ! end do
 
       do j = 2, N-2
-        Do i = 2, N-2
+        do i = 2, N-2
          k = i+(j-1)*N
- 
         ! ==================================
-        ! On recupere rho, u et p (variables primitives)  
         ! ==== Axe x
 
-          
-        UW = get_U( i+1 , j , (i + 0.5)*dx , j*dx )
-        UE = get_U( i , j ,   dx*(i+0.5) , j*dx )
-        prim = primitive(UE(1),UE(2),UE(3),UE(4))
-        primR = primitive(UW(1),UW(2),UW(3),UW(4))
+        UL(1) = reconstructionL(u1i(k-1),u1i(k),u1i(k+1))
+        UL(2) = reconstructionL(u2i(k-1),u2i(k),u2i(k+1))
+        UL(3) = reconstructionL(u3i(k-1),u3i(k),u3i(k+1))
+        UL(4) = reconstructionL(u4i(k-1),u4i(k),u4i(k+1))
+      
+        UR(1) = reconstructionR(u1i(k),u1i(k+1),u1i(k+2))
+        UR(2) = reconstructionR(u2i(k),u2i(k+1),u2i(k+2))
+        UR(3) = reconstructionR(u3i(k),u3i(k+1),u3i(k+2))
+        UR(4) = reconstructionR(u4i(k),u4i(k+1),u4i(k+2))
+      
+        prim = primitive(UL(1),UL(2),UL(3),UL(4))
+        primR = primitive(UR(1),UR(2),UR(3),UR(4))
         e = energie(prim(1),prim(4))
         eR = energie(primR(1),primR(4))
 
         ! == Calcul du flux
         ! j+1/2
         ! Estimation de SL et SR sur cette interface
-        ! call celerite_iso(prim(1), prim(2),prim(4),primR(1), primR(2), primR(4),SL,SR)
+        ! call celerite_hyb(prim(1), prim(2),prim(4),primR(1), primR(2), primR(4),SL,SR)
         ! var = flux_HLLx(prim(1), prim(2),prim(3), e, prim(4), primR(1), primR(2), primR(3), eR, primR(4), SL, SR)
         
         call celerite_hyb(prim(1), prim(2),prim(4),primR(1), primR(2), primR(4),SL,SR)
-        var = flux_hllc_x(prim(1), prim(2),prim(3), e, prim(4), primR(1), primR(2), primR(3), eR, primR(4), SL, SR)
-        
+        var = flux_hllc_x(prim(1), prim(2),prim(3), e, prim(4), primR(1), primR(2), primR(3), eR, primR(4), SL, SR) 
 
         flux1(k) = var(1)
         flux2(k) = var(2)
@@ -273,30 +262,44 @@ program prog
         ! ==================================
 
         ! ==================================
-        ! On recupere rho, u et p (variables primitives)  
         ! ==== Axe y
-        ! === Ordre 2
-          US = get_U( i , j+1 , i*dx , (j+0.5)*dx )
-          UN = get_U( i, j , i*dx , (j+0.5)*dx )
-          prim = primitive(UN(1),UN(2),UN(3),UN(4))
-          primR = primitive(US(1),US(2),US(3),US(4))
-          e = energie(prim(1),prim(4))
-          eR = energie(primR(1),primR(4))
+        UL(1) = reconstructionL(u1i(k-N),u1i(k),u1i(k+N))
+        UL(2) = reconstructionL(u2i(k-N),u2i(k),u2i(k+N))
+        UL(3) = reconstructionL(u3i(k-N),u3i(k),u3i(k+N))
+        UL(4) = reconstructionL(u4i(k-N),u4i(k),u4i(k+N))
+      
+        UR(1) = reconstructionR(u1i(k),u1i(k+N),u1i(k+2*N))
+        UR(2) = reconstructionR(u2i(k),u2i(k+N),u2i(k+2*N))
+        UR(3) = reconstructionR(u3i(k),u3i(k+N),u3i(k+2*N))
+        UR(4) = reconstructionR(u4i(k),u4i(k+N),u4i(k+2*N))
+      
+        prim = primitive(UL(1),UL(2),UL(3),UL(4))
+        primR = primitive(UR(1),UR(2),UR(3),UR(4))
+        e = energie(prim(1),prim(4))
+        eR = energie(primR(1),primR(4))
 
         ! j+1/2
         ! Estimation de SL et SR sur cette interface
-        ! call celerite_iso(prim(1), prim(3),prim(4),primR(1), primR(3), primR(4),SL,SR)
+        ! call celerite_hyb(prim(1), prim(3),prim(4),primR(1), primR(3), primR(4),SL,SR)
         ! var = flux_HLLy(prim(1), prim(2),prim(3), e, prim(4), primR(1), primR(2), primR(3), eR, primR(4), SL, SR)
        
         call celerite_hyb(prim(1), prim(3),prim(4),primR(1), primR(3), primR(4),SL,SR)
         var = flux_hllc_y(prim(1), prim(2),prim(3), e, prim(4), primR(1), primR(2), primR(3), eR, primR(4), SL, SR)
           
-
         fluy1(k) = var(1)
         fluy2(k) = var(2)
         fluy3(k) = var(3)
         fluy4(k) = var(4)
         Smax = max(Smax, abs(SL), abs(SR))
+
+        prim = primitive(u1i(k),u2i(k),u3i(k), u4i(k))
+        primR = primitive(u1i(k+1),u2i(k+1),u3i(k+1), u4i(k+1))
+        call celerite_iso(prim(1), prim(2),prim(4),primR(1), primR(2), primR(4),SL,SR)
+        Smax = max(Smax, abs(SL), abs(SR))
+        primR = primitive(u1i(k+N),u2i(k+N),u3i(k+N),u4i(k+N))
+        call celerite_iso(prim(1), prim(3),prim(4),primR(1), primR(3), primR(4),SL,SR)
+        Smax = max(Smax, abs(SL), abs(SR))
+
         ! ==================================
         ! Verification positivite de la pression
         if (prim(4)<0) then

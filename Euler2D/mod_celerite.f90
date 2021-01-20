@@ -22,8 +22,8 @@ contains
     aL = a(rhoL,pL,gamma)
     aR = a(rhoR,pR,gamma)
 
-    SR = max(uR+aR,uL+aL,uR)
-    SL = min(uL-aL,uR-aL,uL)
+    SR = max(uL-aL,uL+aL,uR-aR,uR+aR) ! a+ b+
+    SL = min(uL-aL,uL+aL,uR-aR,uR+aR) ! a- b-
   end subroutine
 
   subroutine celerite_iso(rhoL,uL,pL,rhoR,uR,pR,SL,SR) 
@@ -43,7 +43,7 @@ contains
   end subroutine celerite_iso
 
   subroutine celerite_lin(rhoL,uL,pL,rhoR,uR,pR,SL,SR)
-
+    ! === NON TESTE ===
     implicit None 
     real, intent(in) :: rhoL,uL,pL,rhoR,uR,pR
     real :: SL, SR, uEtoile, aLEtoile, aREtoile, pEtoile, rhoLEtoile, rhoREtoile, aBarre, rhoBarre,aL, aR

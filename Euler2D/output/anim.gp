@@ -1,5 +1,6 @@
 #set xrange 
 #set yrange 
+set size ratio -1
 set iso 100
 set samp 100
 set cntrparam levels 50

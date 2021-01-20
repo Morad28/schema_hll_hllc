@@ -241,9 +241,4 @@ function flux_HLLx(rhoL,uL,vL,eL,pL,rhoR,uR,vR,eR,pR,SL,SR)
 
 
 
-
-
-
-
-
 end module mod_flux
