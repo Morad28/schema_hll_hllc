@@ -24,83 +24,82 @@ contains
         real, intent(in) :: UL,UC,UR
         real :: r
         real :: limiteur 
-        r = (UC-UL)/(UR-UC)
+        
+        if (UR == UC) then
+            if (UL == UC) then
+                r = 1
+                limiteur = 1
+            else
+                limiteur = 1
+            end if
+        else
 
-        ! Minmod
-        limiteur = minmod1D(1.,r)
-
+            r = (UC-UL)/(UR-UC)
+            !limiteur = (r+abs(r))/(1+abs(r))
+            !limiteur = max(0.,min(1.,r))
+            !limiteur = max(0.,min(1.,2*r),min(2.,r))
+        end if 
 
     end function limiteur 
 
+    function lim(r)
+        real, intent(in) :: r 
+        real :: lim 
+    
+        lim = max(0.,min(1.,r))
+        !lim = max(0.,min(1.,2*r),min(2.,r))
+        !lim = min(2.,(r+abs(r))/(1+abs(r)))
+    end function lim 
+
 
     function reconstructionL(UL,UC,UR)
-        real, intent(in) :: UL,UC,UR
-        real :: reconstructionL 
+        real, intent(in) :: UL,UC,UR ! i-1, i, i+1
+        real :: reconstructionL, r, i_r 
+        ! if (UR == UC) then 
+        !     if (UC == UL) then 
+        !         ir =1
+        !     else
+        !         ir = (UC-UL)/(UR-UC)
+        !     end if
+        ! else
+            r = (UC-UL)/(UR-UC)
+            
+            i_r = (UR-UC)/(UC-UL)
+        !end if
+        
+            
+        reconstructionL = UC + 0.5 * lim(r) * (UR-UC)
 
-        reconstructionL = UC + 0.5 * limiteur(UL,UC,UR) * (UR-UC)
+        !reconstructionL = UC + 0.5 * lim(i_r) * (UC-UL)
+      
+
 
     end function reconstructionL
 
     function reconstructionR(UL,UC,UR)
         real, intent(in) :: UL,UC,UR
-        real :: reconstructionR 
+        real :: reconstructionR, r, i_r
 
-        reconstructionR = UC - 0.5 * limiteur(UL,UC,UR) * (UR-UC)
+        ! if (UR == UC) then 
+        !     if (UC == UL) then 
+        !         ir = 1
+        !     else
+        !         ir = (UC-UL)/(UR-UC)
+        !     end if
+        ! else
+            r = (UC-UL)/(UR-UC)
+            i_r = (UR-UC)/(UC-UL)
+        ! end if
+
+
+        reconstructionR = UC - 0.5 * lim(r) *(UC-UL)
+
+        !reconstructionR = UC - 0.5 * lim(i_r) *(UR-UC)
+
 
     end function reconstructionR
 
-    function minmod(u1,u2,u3)
-        implicit None
 
-        real, dimension(1:4),intent(in) :: u1,u2,u3
-        real, dimension(1:4) :: minmod
-        integer :: i 
 
-        do i = 1, 4 
-            minmod(i) = 0
 
-            if (u1(i)>0 .AND. u2(i)>0 .AND. u3(i)>0) then
-                minmod(i) = min(u1(i),u2(i),u3(i))
-            end if
-            
-            if (u1(i)<0 .AND. u2(i)<0 .AND. u3(i)<0) then
-               minmod(i) = max(u1(i),u2(i),u3(i))
-            endif
-        end do 
-    end function minmod
-
-    function polij(UCentre,Ugauche,Udroite,Ubas,Uhaut,x,y,xi,yj)
-        implicit none
-        real, intent(in) :: x,y,xi,yj
-        real, dimension(1:4), intent(in) :: UCentre,Ugauche,Udroite,Ubas,Uhaut
-        real, dimension(1:4) :: polij, Ux, Uy
-        real :: C
-        !print*, Ucentre(1)
-        C=theta/dx
-
-        Ux = minmod(C*(Udroite-Ucentre),(Udroite-Ugauche)/(2*dx),C*(Ucentre-Ugauche))
-        Uy = minmod(C*(Uhaut-Ucentre),(Uhaut-Ubas)/(2*dx),C*(Ucentre-Ubas))
-        
-        polij = Ucentre + (Ux*(x-xi)+Uy*(y-yj))
-        !print*, (Ux*(x-xi)+Uy*(y-yj)), Ucentre
-    end function polij
-
-    function Uk(u1,u2,u3,u4)
-        implicit none 
-        real, intent(in) :: u1,u2,u3,u4
-        real, dimension(1:4) :: Uk
-
-        Uk = (/u1,u2,u3,u4/)
-
-    end function Uk
-
-    function get_U(x,y,xi,yj,UCentre,Ugauche,Udroite,Ubas,Uhaut)
-        implicit none
-        real, intent(in) :: x,y,xi,yj
-        real, intent(in), dimension(1:4) :: UCentre,Ugauche,Udroite,Ubas,Uhaut
-        real, dimension(1:4) :: get_U
-        
-        get_U = polij( UCentre , Ugauche ,Udroite , Ubas , Uhaut , x , y , xi , yj )
-        
-    end function get_U
 end module mod_ordreSup

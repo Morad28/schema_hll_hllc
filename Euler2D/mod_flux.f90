@@ -46,12 +46,17 @@ function flux_hll_x(rhoL,uL,vL,eL,pL,rhoR,uR,vR,eR,pR,SL,SR)
    real, dimension(1:4) :: flux_L, flux_R, flux_hll_x
 
    flux_L = flux_x(rhoL,uL,vL,eL,pL)
-   flux_R = flux_x(rhoR,uR,vL,eR,pR)
+   flux_R = flux_x(rhoR,uR,vR,eR,pR)
+ 
 
    flux_hll_x(1) = (SR*flux_L(1)-SL*flux_R(1)+SL*SR*(rhoR-rhoL))/(SR-SL)
+
    flux_hll_x(2) = (SR*flux_L(2)-SL*flux_R(2)+SL*SR*(rhoR*uR-rhoL*uL))/(SR-SL)
+
    flux_hll_x(3) = (SR*flux_L(3)-SL*flux_R(3)+SL*SR*(rhoR*vR-rhoL*vL))/(SR-SL)
-   flux_hll_x(4) = (SR*flux_L(4)-SL*flux_R(4)+SL*SR*(0.5*rhoR*(uR**2+vR**2)+rhoR*eR-(0.5*rhoL*(uL**2+vL**2)+rhoL*eL)))/(SR-SL)
+
+   flux_hll_x(4) = (SR*flux_L(4)-SL*flux_R(4)+SL*SR*((0.5*rhoR*(uR**2+vR**2)+rhoR*eR)-(0.5*rhoL*(uL**2+vL**2)+rhoL*eL)))/(SR-SL)
+
    end function flux_hll_x
 
 ! Fonction intermediaire pour calculer le flux si SL<0 et SR>0
@@ -62,13 +67,17 @@ function flux_hll_y(rhoL,uL,vL,eL,pL,rhoR,uR,vR,eR,pR,SL,SR)
     real, dimension(1:4) :: flux_L, flux_R, flux_hll_y
  
     flux_L = flux_y(rhoL,uL,vL,eL,pL)
-    flux_R = flux_y(rhoR,uR,vL,eR,pR)
+    flux_R = flux_y(rhoR,uR,vR,eR,pR)
  
     flux_hll_y(1) = (SR*flux_L(1)-SL*flux_R(1)+SL*SR*(rhoR-rhoL))/(SR-SL)
+
     flux_hll_y(2) = (SR*flux_L(2)-SL*flux_R(2)+SL*SR*(rhoR*uR-rhoL*uL))/(SR-SL)
+
     flux_hll_y(3) = (SR*flux_L(3)-SL*flux_R(3)+SL*SR*(rhoR*vR-rhoL*vL))/(SR-SL)
-    flux_hll_y(4) = (SR*flux_L(4)-SL*flux_R(4)+SL*SR*(0.5*rhoR*(uR**2+vR**2)+rhoR*eR-(0.5*rhoL*(uL**2+vL**2)+rhoL*eL)))/(SR-SL)
-    end function flux_hll_y
+
+    flux_hll_y(4) = (SR*flux_L(4)-SL*flux_R(4)+SL*SR*((0.5*rhoR*(uR**2+vR**2)+rhoR*eR)-(0.5*rhoL*(uL**2+vL**2)+rhoL*eL)))/(SR-SL)  
+
+  end function flux_hll_y
 
 ! FLux HLL sur l'axe x 
 function flux_HLLx(rhoL,uL,vL,eL,pL,rhoR,uR,vR,eR,pR,SL,SR)
@@ -105,8 +114,7 @@ function flux_HLLx(rhoL,uL,vL,eL,pL,rhoR,uR,vR,eR,pR,SL,SR)
     if ( SL <= 0 .AND. SR >= 0 ) then
       flux_HLLy = flux_hll_y(rhoL,uL,vL,eL,pL,rhoR,uR,vR,eR,pR,SL,SR)
     end if 
-  
-    end function flux_HLLy
+  end function flux_HLLy
 
 
   function flux_hllc_x(rhoL,uL,vL,eL,pL,rhoR,uR,vR,eR,pR,SL,SR)
@@ -114,7 +122,7 @@ function flux_HLLx(rhoL,uL,vL,eL,pL,rhoR,uR,vR,eR,pR,SL,SR)
     
     real, intent(in) :: rhoL,uL,vL,eL,pL,rhoR,uR,vR,eR,pR,SL,SR
     real :: SM,rhoBarre, aBarre, aL, aR, CL, CR
-    real, dimension(1:4) :: flux_hllc_x, ULEtoile, UREtoile, flux_L, flux_R, Q, R
+    real, dimension(1:4) :: flux_hllc_x, ULEtoile, UREtoile, flux_L, flux_R!, Q, R
     
    
     aL = a(rhoL,pL,gamma)
@@ -163,7 +171,7 @@ function flux_HLLx(rhoL,uL,vL,eL,pL,rhoR,uR,vR,eR,pR,SL,SR)
       flux_hllc_x(3) = flux_L(3) + SL*(ULEtoile(3)-rhoL*vL)
       flux_hllc_x(4) = flux_L(4) + SL*(ULEtoile(4)-(0.5*rhoL*(uL**2+vL**2)+rhoL*eL))
 
-      !print*,"out flux hll", flux_hllc
+      
     end if 
     if ( SM <= 0 .AND. SR >= 0 ) then
       flux_hllc_x(1) = flux_R(1) + SR*(UREtoile(1)-rhoR)
@@ -179,7 +187,7 @@ function flux_HLLx(rhoL,uL,vL,eL,pL,rhoR,uR,vR,eR,pR,SL,SR)
       
       real, intent(in) :: rhoL,uL,vL,eL,pL,rhoR,uR,vR,eR,pR,SL,SR
       real :: SM,rhoBarre, aBarre, aL, aR, CL, CR
-      real, dimension(1:4) :: flux_hllc_y, ULEtoile, UREtoile, flux_L, flux_R, Q, R
+      real, dimension(1:4) :: flux_hllc_y, ULEtoile, UREtoile, flux_L, flux_R!, Q, R
       
      
       aL = a(rhoL,pL,gamma)
@@ -228,7 +236,7 @@ function flux_HLLx(rhoL,uL,vL,eL,pL,rhoR,uR,vR,eR,pR,SL,SR)
         flux_hllc_y(3) = flux_L(3) + SL*(ULEtoile(3)-rhoL*vL)
         flux_hllc_y(4) = flux_L(4) + SL*(ULEtoile(4)-(0.5*rhoL*(uL**2+vL**2)+rhoL*eL))
   
-        !print*,"out flux hll", flux_hllc
+       ! print*,"out flux hll", flux_hllc_y
       end if 
       if ( SM <= 0 .AND. SR >= 0 ) then
         flux_hllc_y(1) = flux_R(1) + SR*(UREtoile(1)-rhoR)
