@@ -18,13 +18,13 @@ program prog
     !=====
 
       O = 1 ! 1 pour ordre 1 ou 2 pour ordre 2
-      flux = 'HLL'
+      flux = 'HLLC'
 
     !===== Pas du maillage 
       dx = 1./(N)
 
     !==== Choix du cas test 
-      call Cas_test( 1 )
+      call Cas_test( 7 )
 
     !==== Conditions initiales t = 0
       call Initialisation( u1i , u2i , u3i , u4i )
