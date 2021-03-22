@@ -9,15 +9,25 @@ module mod_update
     implicit none
     contains
 
-    subroutine Update(flux)
+    subroutine Update(flux, name, l)
         implicit None 
         character*4, intent(in) :: flux
+        Character*21 :: name
+        integer :: l, cpt = 0
         integer :: i, j, k, Bool = 0
         real ::  dt, tn=0, e, eR, Smax
         real, Dimension(1:4) :: var, primR, prim
         real, dimension(1:N*N-N):: flux1, flux2, flux3, flux4, fluy1, fluy2, fluy3, fluy4
         Loop : do while (tn<tout)
-  
+        
+        ! Pour debug
+        ! if (cpt>10) then
+        !   call file_rename(l,name)
+        !   call write(name)
+        !   cpt =0
+        ! end if
+        ! cpt = cpt +1
+
         Smax = 0
         do j = 1, N-1
          Do i = 1, N-1
@@ -37,7 +47,7 @@ module mod_update
           ! j+1/2
           ! Estimation de SL et SR sur cette interface
           if (flux == 'HLL') then
-            call celerite_iso(prim(1), prim(2),prim(4),primR(1), primR(2), primR(4),SL,SR)
+            call celerite_hyb(prim(1), prim(2),prim(4),primR(1), primR(2), primR(4),SL,SR)
             var = flux_HLLx(prim(1), prim(2),prim(3), e, prim(4), primR(1), primR(2), primR(3), eR, primR(4), SL, SR)
           end if 
           if (flux == 'HLLC') then  
@@ -65,7 +75,7 @@ module mod_update
           ! j+1/2
           ! Estimation de SL et SR sur cette interface
           if (flux == 'HLL') then
-            call celerite_iso(prim(1), prim(3),prim(4),primR(1), primR(3), primR(4),SL,SR)
+            call celerite_hyb(prim(1), prim(3),prim(4),primR(1), primR(3), primR(4),SL,SR)
             var = flux_HLLy(prim(1), prim(2),prim(3), e, prim(4), primR(1), primR(2), primR(3), eR, primR(4), SL, SR)
           end if
           if (flux == 'HLLC') then
@@ -140,8 +150,9 @@ module mod_update
   
       end subroutine Update
 
-      subroutine Update_2
+      subroutine Update_2(flux)
         implicit None
+        character*4, intent(in) :: flux
         Integer :: i, j, k , Bool = 0
         real ::  dt, tn=0, e, eR, Smax
         real, dimension(1:4) :: UL, UR
@@ -174,21 +185,22 @@ module mod_update
           ! == Calcul du flux
           ! j+1/2
           ! Estimation de SL et SR sur cette interface
-  
-          ! call celerite_iso(prim(1), prim(2),prim(4),primR(1), primR(2), primR(4),SL,SR)
-          ! var = flux_HLLx(prim(1), prim(2),prim(3), e, prim(4), primR(1), primR(2), primR(3), eR, primR(4), SL, SR)
-          
-          call celerite_hyb(prim(1), prim(2),prim(4),primR(1), primR(2), primR(4),SL,SR)
-          var = flux_hllc_x(prim(1), prim(2),prim(3), e, prim(4), primR(1), primR(2), primR(3), eR, primR(4), SL, SR) 
-  
+          if (flux == 'HLL') then
+            call celerite_iso(prim(1), prim(2),prim(4),primR(1), primR(2), primR(4),SL,SR)
+            var = flux_HLLx(prim(1), prim(2),prim(3), e, prim(4), primR(1), primR(2), primR(3), eR, primR(4), SL, SR)
+          end if
+
+          if (flux == 'HLLC') then
+            call celerite_hyb(prim(1), prim(2),prim(4),primR(1), primR(2), primR(4),SL,SR)
+            var = flux_hllc_x(prim(1), prim(2),prim(3), e, prim(4), primR(1), primR(2), primR(3), eR, primR(4), SL, SR) 
+          end if
+
           flux1(k) = var(1)
           flux2(k) = var(2)
           flux3(k) = var(3)
           flux4(k) = var(4)
           Smax = max(Smax, abs(SL), abs(SR))
-  
-          ! ==================================
-  
+
           ! ==================================
           ! ==== Axe y
           UL(1) = reconstructionL(u1i(k-N),u1i(k),u1i(k+N))
@@ -208,25 +220,21 @@ module mod_update
   
           ! j+1/2
           ! Estimation de SL et SR sur cette interface
-          ! call celerite_iso(prim(1), prim(3),prim(4),primR(1), primR(3), primR(4),SL,SR)
-          ! var = flux_HLLy(prim(1), prim(2),prim(3), e, prim(4), primR(1), primR(2), primR(3), eR, primR(4), SL, SR)
-         
-          call celerite_hyb(prim(1), prim(3),prim(4),primR(1), primR(3), primR(4),SL,SR)
-          var = flux_hllc_y(prim(1), prim(2),prim(3), e, prim(4), primR(1), primR(2), primR(3), eR, primR(4), SL, SR)
-            
+          if (flux == 'HLL') then
+            call celerite_iso(prim(1), prim(3),prim(4),primR(1), primR(3), primR(4),SL,SR)
+            var = flux_HLLy(prim(1), prim(2),prim(3), e, prim(4), primR(1), primR(2), primR(3), eR, primR(4), SL, SR)
+          end if
+
+          if (flux == 'HLLC') then
+            call celerite_hyb(prim(1), prim(3),prim(4),primR(1), primR(3), primR(4),SL,SR)
+            var = flux_hllc_y(prim(1), prim(2),prim(3), e, prim(4), primR(1), primR(2), primR(3), eR, primR(4), SL, SR)
+          end if 
           fluy1(k) = var(1)
           fluy2(k) = var(2)
           fluy3(k) = var(3)
           fluy4(k) = var(4)
           Smax = max(Smax, abs(SL), abs(SR))
-  
-          ! prim = primitive(u1i(k),u2i(k),u3i(k), u4i(k))
-          ! primR = primitive(u1i(k+1),u2i(k+1),u3i(k+1), u4i(k+1))
-          ! call celerite_hyb(prim(1), prim(2),prim(4),primR(1), primR(2), primR(4),SL,SR)
-          ! Smax = max(Smax, abs(SL), abs(SR))
-          ! primR = primitive(u1i(k+N),u2i(k+N),u3i(k+N),u4i(k+N))
-          ! call celerite_hyb(prim(1), prim(3),prim(4),primR(1), primR(3), primR(4),SL,SR)
-          ! Smax = max(Smax, abs(SL), abs(SR))
+
   
           ! ==================================
           ! Verification positivite de la pression
@@ -312,5 +320,65 @@ module mod_update
   
   
       end subroutine Update_2
+
+
+         ! ======================== RENAME ========================
+    Subroutine file_rename(Me,name)
+      Implicit None
+      Integer :: Me
+      Character*21 ::name
+      Character*2 :: tn
+      Integer :: i1,i2,i3
+      Me = Me + 1
+      i2 =( Me - 100*i1)/10
+      i3 = Me - 100*i1 -10*i2
+      tn = char(i2+48)//char(i3+48)
+      name='output/sol'//tn//'.dat'
+    End Subroutine file_rename
+    ! ======================== WRITE ========================
+    subroutine write(name)
+      implicit None 
+      Character*21, intent(in)::name
+      integer :: i,j,k
+    open(unit=4,file=name)
+    Do j=1,N
+      Do i=1,N
+        k = i + (j-1)*N
+         write(4,*) i*dx, j*dx , primitive(u1i(k), u2i(k), u3i(k), u4i(k))
+         if (i==N) write(4,*)
+      EndDo   
+    Enddo 
+    close(4)
+    end subroutine write
+
+    subroutine write1Dx
+      implicit None 
+      integer :: i,j,k
+      open(unit=5,file='output/out1Dx.dat')
+      Do j=1,N
+        Do i=1,N
+          k = i + (j-1)*N
+          if (j == int(N/2)) then 
+            write(5,*) i*dx, j*dx , primitive(u1i(k), u2i(k), u3i(k), u4i(k))
+          end if
+        EndDo   
+      Enddo 
+      close(5)
+    end subroutine write1Dx
+
+    subroutine write1Dy
+      implicit None 
+      integer :: i,j,k
+      open(unit=6,file='output/out1Dy.dat')
+      Do j=1,N
+        Do i=1,N
+          k = i + (j-1)*N
+          if (i == int(N/2)) then 
+            write(6,*) i*dx, j*dx , primitive(u1i(k), u2i(k), u3i(k), u4i(k))
+          end if
+        EndDo   
+      Enddo 
+      close(6)
+    end subroutine write1Dy
 
 end module mod_update

@@ -92,7 +92,7 @@ contains
         ! end if
 
 
-        reconstructionR = UC - 0.5 * lim(r) *(UC-UL)
+        reconstructionR = UC - 0.5 * lim(r) *(UR-UC)
 
         !reconstructionR = UC - 0.5 * lim(i_r) *(UR-UC)
 
