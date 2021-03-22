@@ -4,7 +4,7 @@ module mod_CI
   implicit none
   real :: xmin = 0, xmax = 1, x0, x1
   real :: rhoL , uL , pL, rhoR , uR, pR, rhoM, uM, pM, tout 
-  Integer :: N=3000
+  Integer :: N=401
 
   contains
   subroutine Cas_test(n)

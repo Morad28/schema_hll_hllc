@@ -57,6 +57,11 @@ program prog
         ! Estimation de SL et SR sur cette interface
         call celerite_iso(prim(1), prim(2),prim(3),primR(1), primR(2), primR(3),SL,SR)
         var = flux(prim(1), prim(2), e, prim(3), primR(1), primR(2), eR, primR(3), SL, SR)
+        
+        ! call celerite_hyb(prim(1), prim(2),prim(3),primR(1), primR(2), primR(3),SL,SR)
+        ! var = flux_hllc(prim(1), prim(2), e, prim(3), primR(1), primR(2), eR, primR(3), SL, SR)
+        
+        
         flux1(j) = var(1)
         flux2(j) = var(2)
         flux3(j) = var(3)
